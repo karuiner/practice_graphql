@@ -2,6 +2,8 @@
 
 ## 클라이언트 구조
 
+#### Requirement
+
 - 하나의 게시글에 붙어있는 대댓글들을 구현하고자 함.
 - 로그인의 경우 게스트네임으로 로그인되게 구성.
 - 댓글과 댓글에 댓글을 붙이는 대댓글로 구성.
@@ -11,6 +13,16 @@
 - 댓글의경우 생성, 수정, 삭제가 가능하게 구성.
 
 - 대댓글의 크기는 댓글의 80% ~ 90% 정도로 가정
+
+#### WireFrame
+
+<p align="center"><img src="./img/practice_graphql.png"></p>
+
+#### stack
+
+- react
+- styled-component
+-
 
 ## DB //아직 미정
 
