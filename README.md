@@ -22,7 +22,7 @@
 
 - react
 - styled-component
--
+- graphql-hooks // 사용해보자
 
 ## DB //아직 미정
 
@@ -64,6 +64,12 @@
 
 ## 서버
 
+#### stack
+
 - graphql - 이번 학습의 목표
 - express - 뭐 가장 많이 써보긴한것 같으니
   그다음은 뭐가 필요한지 아직 모르겠다.
+
+#### Reference
+
+[학습 참고 링크](https://yuddomack.tistory.com/entry/expressgraphql%EC%97%90-mongodb-%EC%82%AC%EC%9A%A9%ED%95%98%EA%B8%B0)

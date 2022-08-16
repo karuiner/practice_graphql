@@ -1,5 +1,5 @@
 import styled from "styled-components";
-
+import { useQuery } from "graphql-hooks";
 const Frame = styled.div`
   width: 100vw;
   height: 100vh;
@@ -48,7 +48,14 @@ const Dummy = styled.div`
   border: solid 1px black;
 `;
 
+const QUERY = `query {
+  hello
+}
+`;
+
 function App() {
+  const { loading, error, data } = useQuery(QUERY);
+  console.log(loading, error, data);
   return (
     <Frame>
       <InnerFrame>
