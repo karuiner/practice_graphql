@@ -16,28 +16,89 @@ const UserName = styled.div`
 `;
 
 const Etc = styled.div`
-  height: 100%;
-  width: 20%;
-  border: solid 1px black;
+  height: 20px;
+  width: 100%;
+  padding-left: 10px;
   display: flex;
+  align-items: center;
+`;
+
+const Sub = styled.div`
+  height: 100%;
+  flex: 1 0 1;
+  display: flex;
+  margin-right: 20px;
   align-items: center;
   justify-content: center;
 `;
 const Content = styled.div`
-  height: 100%;
-  width: 70%;
-  border: solid 1px black;
+  height: calc(100% - 20px);
+  width: 100%;
+
   display: flex;
   align-items: center;
   justify-content: center;
 `;
+const ContentBox = styled.div`
+  height: 100%;
+  width: calc(90% - 20px);
+  border-bottom: solid 1px black;
+  border-top: solid 1px black;
+  display: flex;
+  flex-direction: column;
+`;
+const RemoveButtonBox = styled.div`
+  height: 100%;
+  width: 20px;
+  display: flex;
+  flex-drection: column;
+  border-bottom: solid 1px black;
+  border-top: solid 1px black;
+  border-right: solid 1px black;
+`;
+const RemoveButton = styled.button`
+  height: 20px;
+  width: 20px;
+`;
 
-export default function Comment() {
+export default function Comment({
+  noReply,
+  showReply,
+  writeReply,
+  setShowReply,
+  setWriteReply,
+}) {
   return (
     <Frame>
       <UserName>name</UserName>
-      <Content>content</Content>
-      <Etc>time + button</Etc>
+      <ContentBox>
+        <Content>content</Content>
+        <Etc>
+          <Sub>작성 시간 : time</Sub>
+          {noReply ? null : (
+            <Sub
+              onClick={() => {
+                setShowReply(!showReply);
+              }}
+            >
+              답글보기
+            </Sub>
+          )}
+          {noReply ? null : (
+            <Sub
+              onClick={() => {
+                setWriteReply(!writeReply);
+              }}
+            >
+              답글쓰기
+            </Sub>
+          )}
+        </Etc>
+      </ContentBox>
+
+      <RemoveButtonBox>
+        <RemoveButton>X</RemoveButton>
+      </RemoveButtonBox>
     </Frame>
   );
 }

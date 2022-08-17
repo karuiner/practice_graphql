@@ -50,18 +50,18 @@ const SubContentArea = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-end;
 `;
 
 const CommentBox = styled.div`
-  height: ${({ sub }) => (sub ? "80px" : "100px")};
-  width: ${({ sub }) => (sub ? "80%" : "100%")};
+  height: ${({ sub }) => (sub ? "90px" : "100px")};
+  width: ${({ sub }) => (sub ? "90%" : "100%")};
 
   padding: 5px;
 `;
 const NewCommentBox = styled.div`
-  height: ${({ sub }) => (sub ? "80px" : "100px")};
-  width: ${({ sub }) => (sub ? "80%" : "100%")};
+  height: ${({ sub }) => (sub ? "90px" : "100px")};
+  width: ${({ sub }) => (sub ? "90%" : "100%")};
 
   padding: 5px;
 `;
@@ -113,7 +113,19 @@ function App() {
                       .map((x, i) => {
                         return (
                           <CommentBox key={i + "1"} sub>
-                            <Comment></Comment>
+                            <Comment
+                              noReply
+                              showReply={data[i]}
+                              writeReply={false}
+                              setShowReply={(x) => {
+                                setData([
+                                  ...data.slice(0, i),
+                                  x,
+                                  ...data.slice(i + 1),
+                                ]);
+                              }}
+                              setWriteReply={() => {}}
+                            ></Comment>
                           </CommentBox>
                         );
                       })}
