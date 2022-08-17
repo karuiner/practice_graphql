@@ -1,5 +1,6 @@
 import styled from "styled-components";
 import { useQuery } from "graphql-hooks";
+import Article from "./components/article";
 const Frame = styled.div`
   width: 100vw;
   height: 100vh;
@@ -54,13 +55,15 @@ const QUERY = `query {
 `;
 
 function App() {
-  const { loading, error, data } = useQuery(QUERY);
-  console.log(loading, error, data);
+  // const { loading, error, data } = useQuery(QUERY);
+  // console.log(loading, error, data);
   return (
     <Frame>
       <InnerFrame>
         <Header></Header>
-        <ArticleArea></ArticleArea>
+        <ArticleArea>
+          <Article />
+        </ArticleArea>
         <ContentArea>
           {Array(10)
             .fill(1)
