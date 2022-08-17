@@ -1,6 +1,9 @@
 import styled from "styled-components";
 import { useQuery } from "graphql-hooks";
 import Article from "./components/article";
+import NewComment from "./components/newcomment";
+import Comment from "./components/comment";
+import { useState } from "react";
 const Frame = styled.div`
   width: 100vw;
   height: 100vh;
@@ -43,10 +46,25 @@ const ContentArea = styled.div`
   align-items: center;
 `;
 
-const Dummy = styled.div`
-  height: 200px;
-  width: 500px;
+const SubContentArea = styled.div`
+  width: 100%;
+  display: flex;
   border: solid 1px black;
+  flex-direction: column;
+  align-items: center;
+`;
+
+const CommentBox = styled.div`
+  height: ${({ sub }) => (sub ? "80px" : "100px")};
+  width: ${({ sub }) => (sub ? "80%" : "100%")};
+  border: solid 1px black;
+  padding: 5px;
+`;
+const NewCommentBox = styled.div`
+  height: ${({ sub }) => (sub ? "80px" : "100px")};
+  width: ${({ sub }) => (sub ? "80%" : "100%")};
+  border: solid 1px black;
+  padding: 5px;
 `;
 
 const QUERY = `query {
@@ -57,6 +75,8 @@ const QUERY = `query {
 function App() {
   // const { loading, error, data } = useQuery(QUERY);
   // console.log(loading, error, data);
+  let [data, setData] = useState(Array(10).fill(false));
+
   return (
     <Frame>
       <InnerFrame>
@@ -65,11 +85,45 @@ function App() {
           <Article />
         </ArticleArea>
         <ContentArea>
-          {Array(10)
-            .fill(1)
-            .map((x, i) => {
-              return <Dummy key={i}></Dummy>;
-            })}
+          <NewCommentBox>
+            <NewComment></NewComment>
+          </NewCommentBox>
+          {data.map((x, i) => {
+            return (
+              <SubContentArea key={i}>
+                <CommentBox
+                  onClick={() => {
+                    setData([
+                      ...data.slice(0, i),
+                      !data[i],
+                      ...data.slice(i + 1),
+                    ]);
+                  }}
+                >
+                  {"test"}
+                  <Comment></Comment>
+                </CommentBox>
+                {data[i] ? (
+                  <SubContentArea>
+                    {
+                      <NewCommentBox sub>
+                        <NewComment></NewComment>
+                      </NewCommentBox>
+                    }
+                    {Array(10)
+                      .fill(1)
+                      .map((x, i) => {
+                        return (
+                          <CommentBox key={i + "1"} sub>
+                            <Comment></Comment>
+                          </CommentBox>
+                        );
+                      })}
+                  </SubContentArea>
+                ) : null}
+              </SubContentArea>
+            );
+          })}
         </ContentArea>
       </InnerFrame>
     </Frame>
