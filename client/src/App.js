@@ -49,7 +49,6 @@ const ContentArea = styled.div`
 const SubContentArea = styled.div`
   width: 100%;
   display: flex;
-  border: solid 1px black;
   flex-direction: column;
   align-items: center;
 `;
@@ -57,13 +56,13 @@ const SubContentArea = styled.div`
 const CommentBox = styled.div`
   height: ${({ sub }) => (sub ? "80px" : "100px")};
   width: ${({ sub }) => (sub ? "80%" : "100%")};
-  border: solid 1px black;
+
   padding: 5px;
 `;
 const NewCommentBox = styled.div`
   height: ${({ sub }) => (sub ? "80px" : "100px")};
   width: ${({ sub }) => (sub ? "80%" : "100%")};
-  border: solid 1px black;
+
   padding: 5px;
 `;
 
@@ -100,7 +99,6 @@ function App() {
                     ]);
                   }}
                 >
-                  {"test"}
                   <Comment></Comment>
                 </CommentBox>
                 {data[i] ? (
