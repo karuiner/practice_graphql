@@ -1,6 +1,7 @@
 import { useState } from "react";
 import styled from "styled-components";
 import Comment from "./comment";
+import NewComment from "./newcomment";
 
 const Frame = styled.div`
   height: 100%;
@@ -16,9 +17,8 @@ const CommentInnerBox = styled.div`
   padding: 5px;
 `;
 const NewSubCommentBox = styled.div`
-  height: "90px";
-  width: "90%";
-
+  height: 90px;
+  width: 90%;
   padding: 5px;
 `;
 
@@ -37,34 +37,45 @@ export default function CommentList({
   writeReply,
   setWriteReply,
 }) {
-  let [data, setData] = useState(Array(10).fill(false));
+  let [data, setData] = useState(Array(10).fill([false, false]));
   return (
     <Frame>
-      {comments.map((x, i) => (
+      {comments.map(([x, y], i) => (
         <CoomentOuterBox key={i}>
           <CommentInnerBox sub={sub}>
             <Comment
               noReply={noReply}
               showReply={x}
               setShowReply={(x) => {
+                let z = y;
+                if (!x) {
+                  z = false;
+                }
                 setShowReply([
                   ...comments.slice(0, i),
-                  x,
+                  [x, z],
                   ...comments.slice(i + 1),
                 ]);
               }}
-              writeReply={writeReply}
-              setWriteReply={setWriteReply}
+              writeReply={y}
+              setWriteReply={(y) => {
+                if (x) {
+                  setShowReply([
+                    ...comments.slice(0, i),
+                    [x, y],
+                    ...comments.slice(i + 1),
+                  ]);
+                }
+              }}
             ></Comment>
           </CommentInnerBox>
+          {x && y ? (
+            <NewSubCommentBox>
+              <NewComment usb></NewComment>
+            </NewSubCommentBox>
+          ) : null}
           {!sub && data.length && x > 0 ? (
-            <CommentList
-              comments={data}
-              sub
-              noReply
-              writeReply={false}
-              setWriteReply={() => {}}
-            ></CommentList>
+            <CommentList comments={data} sub noReply></CommentList>
           ) : null}
         </CoomentOuterBox>
       ))}

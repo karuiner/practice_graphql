@@ -9,14 +9,14 @@ const Frame = styled.div`
 const ArticleInfoBox = styled.div`
   height: 100px;
   width: 100%;
-  border: solid 1px red;
+  // border: solid 1px black;
   display: flex;
   flex-direction: column;
 `;
 const ArticleSubject = styled.div`
   height: 100px;
   width: 100%;
-  border: solid 1px red;
+  border-bottom: solid 1px black;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,7 +25,7 @@ const ArticleInfoLowerBox = styled.div`
   height: 100px;
   width: 100%;
   display: flex;
-  border: solid 1px red;
+  border-bottom: solid 1px black;
 `;
 
 const Content = styled.div`

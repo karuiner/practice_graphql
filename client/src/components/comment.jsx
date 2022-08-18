@@ -68,7 +68,6 @@ export default function Comment({
   setShowReply,
   setWriteReply,
 }) {
-  console.log(setWriteReply);
   return (
     <Frame>
       <UserName>name</UserName>
@@ -88,7 +87,7 @@ export default function Comment({
           {!noReply ? (
             <Sub
               onClick={() => {
-                if (setWriteReply) {
+                if (setWriteReply !== undefined) {
                   setWriteReply(!writeReply);
                 }
               }}
