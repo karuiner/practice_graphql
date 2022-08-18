@@ -68,6 +68,7 @@ export default function Comment({
   setShowReply,
   setWriteReply,
 }) {
+  console.log(setWriteReply);
   return (
     <Frame>
       <UserName>name</UserName>
@@ -84,15 +85,17 @@ export default function Comment({
               답글보기
             </Sub>
           )}
-          {noReply ? null : (
+          {!noReply ? (
             <Sub
               onClick={() => {
-                setWriteReply(!writeReply);
+                if (setWriteReply) {
+                  setWriteReply(!writeReply);
+                }
               }}
             >
               답글쓰기
             </Sub>
-          )}
+          ) : null}
         </Etc>
       </ContentBox>
 

@@ -4,12 +4,14 @@ import Article from "./components/article";
 import NewComment from "./components/newcomment";
 import Comment from "./components/comment";
 import { useState } from "react";
+import CommentList from "./components/commentList";
 const Frame = styled.div`
   width: 100vw;
   height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none;
 `;
 
 const InnerFrame = styled.div`
@@ -87,53 +89,7 @@ function App() {
           <NewCommentBox>
             <NewComment></NewComment>
           </NewCommentBox>
-          {data.map((x, i) => {
-            return (
-              <SubContentArea key={i}>
-                <CommentBox
-                  onClick={() => {
-                    setData([
-                      ...data.slice(0, i),
-                      !data[i],
-                      ...data.slice(i + 1),
-                    ]);
-                  }}
-                >
-                  <Comment></Comment>
-                </CommentBox>
-                {data[i] ? (
-                  <SubContentArea>
-                    {
-                      <NewCommentBox sub>
-                        <NewComment></NewComment>
-                      </NewCommentBox>
-                    }
-                    {Array(10)
-                      .fill(1)
-                      .map((x, i) => {
-                        return (
-                          <CommentBox key={i + "1"} sub>
-                            <Comment
-                              noReply
-                              showReply={data[i]}
-                              writeReply={false}
-                              setShowReply={(x) => {
-                                setData([
-                                  ...data.slice(0, i),
-                                  x,
-                                  ...data.slice(i + 1),
-                                ]);
-                              }}
-                              setWriteReply={() => {}}
-                            ></Comment>
-                          </CommentBox>
-                        );
-                      })}
-                  </SubContentArea>
-                ) : null}
-              </SubContentArea>
-            );
-          })}
+          <CommentList comments={data} setShowReply={setData}></CommentList>
         </ContentArea>
       </InnerFrame>
     </Frame>
