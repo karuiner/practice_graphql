@@ -16,7 +16,7 @@ const articleSchema = new Schema(
       ref: "User",
     },
 
-    contents: { type: String, required: true },
+    content: { type: String, required: true },
     comments: [
       {
         type: mongoose.Schema.Types.ObjectId,
@@ -62,11 +62,11 @@ const Comment = model("Comment", commentSchema);
 async function f() {
   let mode = "new";
 
-  // if (mode === "new") {
-  //   await User.collection.drop();
-  //   await Article.collection.drop();
-  //   await Comment.collection.drop();
-  // }
+  if (mode === "new") {
+    await User.collection.drop();
+    await Article.collection.drop();
+    await Comment.collection.drop();
+  }
 
   let editer = await User.findOne({ userName: "editer" });
   if (editer === null) {
@@ -82,7 +82,7 @@ async function f() {
   if (article === null) {
     article = new Article({
       writerId: editer._id,
-      contents: "test_content",
+      content: "test_content",
     });
     article = await article.save();
   }

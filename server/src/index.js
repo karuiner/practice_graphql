@@ -1,12 +1,20 @@
+const dotenv = require("dotenv");
+dotenv.config();
+const mongoose = require("mongoose");
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
 const { buildSchema } = require("graphql");
 const cors = require(`cors`);
+const User = require("../schema/User");
+const Article = require("../schema/Article");
+const Comment = require("../schema/Comment");
 let schema = buildSchema(`
   type Query {
     hello: String
     user:User
-    article:[Article]
+    users:[User]
+    articles:[Article]
+    article:Article
     subcomments:[Comment]
   }
 
@@ -35,17 +43,21 @@ let schema = buildSchema(`
 let root = {
   hello: async () => "Hello world!",
   user: async () => "test",
-  article: async () => [
-    { _id: "1234", writeId: "2345", content: "test", comments: [] },
-  ],
-  subcomments: async () => [
-    {
-      _id: "23132",
-      writerId: "64754",
-      comment: "ttete",
-      subcomments: [],
-    },
-  ],
+  users: async () => {
+    return await User.find();
+  },
+  articles: async () => {
+    return await Article.find();
+  },
+  article: async (id) => {
+    return await Article.findOne({ _id: id });
+  },
+
+  subcomments: async (id) => {
+    let comment = await Comment.find();
+    console.log(comment);
+    return comment;
+  },
 };
 
 const app = express();
@@ -63,4 +75,12 @@ app.use(
     graphiql: true,
   })
 );
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    dbName: process.env.MONGODB_DBNAME,
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Successfully connected to mongodb"))
+  .catch((e) => console.error(e));
 app.listen(4000, () => console.log("Now browse to localhost:4000/graphql"));
