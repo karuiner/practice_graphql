@@ -11,52 +11,64 @@ const Comment = require("../schema/Comment");
 let schema = buildSchema(`
   type Query {
     hello: String
-    user:User
-    users:[User]
-    articles:[Article]
-    article:Article
-    subcomments:[Comment]
+    user( id: ID!): User
+    users( id: ID): [User]
+    articles( id: ID): [Article]
+    article( id: ID!) : Article
+    subcomments( id: ID!): [Comment]
   }
 
   type User {
     _id: String
     userName: String
+    createdAt: String
+    updatedAt: String
   }
 
   type Article {
     _id: String
     writerId: String
     content: String
+    createdAt: String
+    updatedAt: String
     comments:[Comment]
 
   }
+
 
   type Comment {
     _id: String
     writerId: String
     comment: String
+    createdAt: String
+    updatedAt: String
     subcomments:[Comment]
   }
+
 
 `);
 
 let root = {
   hello: async () => "Hello world!",
-  user: async () => "test",
+  user: async ({ id }) => {
+    const ans = await User.findOne({ _id: id });
+    return ans;
+  },
   users: async () => {
-    return await User.find();
+    const ans = await User.find();
+    return ans;
   },
   articles: async () => {
-    return await Article.find();
+    const ans = await Article.find();
+    return ans;
   },
-  article: async (id) => {
-    return await Article.findOne({ _id: id });
+  article: async ({ id }) => {
+    const ans = await Article.findOne({ _id: id });
+    return ans;
   },
-
-  subcomments: async (id) => {
-    let comment = await Comment.find();
-    console.log(comment);
-    return comment;
+  subcomments: async ({ id }) => {
+    let comments = await Comment.find({ commentId: id });
+    return comments;
   },
 };
 

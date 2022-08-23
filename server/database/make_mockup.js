@@ -113,6 +113,8 @@ async function f() {
       });
       c++;
       comment = await comment.save();
+      article.comments.push(comment);
+      articel = await article.save();
       for (let j = 0; j <= l; j++) {
         let subcomment = new Comment({
           writerId: users[k]._id,
