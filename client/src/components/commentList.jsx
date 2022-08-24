@@ -40,10 +40,11 @@ export default function CommentList({
   let [data, setData] = useState(Array(10).fill([false, false]));
   return (
     <Frame>
-      {comments.map(([x, y], i) => (
+      {comments.map(([x, y, cmt], i) => (
         <CoomentOuterBox key={i}>
           <CommentInnerBox sub={sub}>
             <Comment
+              data={cmt || {}}
               noReply={noReply}
               showReply={x}
               setShowReply={(x) => {
@@ -53,7 +54,7 @@ export default function CommentList({
                 }
                 setShowReply([
                   ...comments.slice(0, i),
-                  [x, z],
+                  [x, z, cmt],
                   ...comments.slice(i + 1),
                 ]);
               }}
@@ -62,7 +63,7 @@ export default function CommentList({
                 if (x) {
                   setShowReply([
                     ...comments.slice(0, i),
-                    [x, y],
+                    [x, y, cmt],
                     ...comments.slice(i + 1),
                   ]);
                 }

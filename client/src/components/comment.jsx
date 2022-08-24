@@ -62,6 +62,7 @@ const RemoveButton = styled.button`
 `;
 
 export default function Comment({
+  data,
   noReply,
   showReply,
   writeReply,
@@ -70,9 +71,9 @@ export default function Comment({
 }) {
   return (
     <Frame>
-      <UserName>name</UserName>
+      <UserName>{data.userName}</UserName>
       <ContentBox>
-        <Content>content</Content>
+        <Content>{data.comment}</Content>
         <Etc>
           <Sub>작성 시간 : time</Sub>
           {noReply ? null : (

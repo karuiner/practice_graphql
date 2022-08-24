@@ -2,9 +2,9 @@ import styled, { css, keyframes } from "styled-components";
 import { useQuery } from "graphql-hooks";
 import Article from "./components/article";
 import NewComment from "./components/newcomment";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import CommentList from "./components/commentList";
-
+import axios from "axios";
 const FadeIn = keyframes`
   from { 
     opacity: 0;
@@ -109,17 +109,60 @@ const NewCommentBox = styled.div`
   padding: 5px;
 `;
 
-const QUERY = `query {
-  hello
-}
-`;
+const getOneArticle = `query Test($id: ID!)  {
+  article(id: $id) {
+    _id
+    writerId
+    content
+    createdAt
+    updatedAt
+    comments {
+      _id
+      writerId
+      comment
+      createdAt
+      updatedAt
+    }
+  }
+}`;
+const serverURI = "http://localhost:4000/graphql";
 
 function App() {
-  // const { loading, error, data } = useQuery(QUERY);
-  // console.log(loading, error, data);
-  let [data, setData] = useState(Array(10).fill([false, false]));
+  let [comments, setCommnets] = useState();
+  let [article, setArticle] = useState();
   let [isLogin, setIsLogin] = useState(false);
   let [doLogout, setDoLogout] = useState(false);
+  const { loading, error, data } = useQuery(getOneArticle, {
+    variables: {
+      id: "6304a9c2a857e5069fa5c3a1",
+    },
+  });
+  if (!comments && data) {
+    console.log(data);
+    let newdata = data.article;
+    let newcomments = newdata.comments.map((x) => [false, false, x]);
+    setArticle({ ...newdata });
+    setCommnets([...newcomments]);
+  }
+  // axios
+  //   .post(serverURI, {
+  //     query: `
+  //       {
+  //         article(id: "6304a9c2a857e5069fa5c3a1") {
+  //         _id
+  //         writerId
+  //         content
+  //         createdAt
+  //         updatedAt
+  //         }
+  //       }
+
+  //      `,
+  //   })
+  //   .then((x) => {
+  //     console.log(x);
+  //   });
+
   return (
     <Frame>
       <InnerFrame>
@@ -155,7 +198,12 @@ function App() {
           <NewCommentBox>
             <NewComment></NewComment>
           </NewCommentBox>
-          <CommentList comments={data} setShowReply={setData}></CommentList>
+          {comments ? (
+            <CommentList
+              comments={comments}
+              setShowReply={setCommnets}
+            ></CommentList>
+          ) : null}
         </ContentArea>
       </InnerFrame>
     </Frame>

@@ -63,7 +63,7 @@ let root = {
     return ans;
   },
   article: async ({ id }) => {
-    const ans = await Article.findOne({ _id: id });
+    const ans = await Article.findOne({ _id: id }).populate("comments");
     return ans;
   },
   subcomments: async ({ id }) => {
