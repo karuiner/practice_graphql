@@ -71,10 +71,11 @@ export default function Comment({
 }) {
   return (
     <Frame>
-      <UserName>{data.userName}</UserName>
+      <UserName></UserName>
       <ContentBox>
         <Content>{data.comment}</Content>
         <Etc>
+          <Sub>{`작성자 : ${data?.writerId?.userName}`}</Sub>
           <Sub>작성 시간 : time</Sub>
           {noReply ? null : (
             <Sub

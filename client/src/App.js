@@ -112,13 +112,19 @@ const NewCommentBox = styled.div`
 const getOneArticle = `query Test($id: ID!)  {
   article(id: $id) {
     _id
-    writerId
+    writerId {
+      _id
+      userName
+    } 
     content
     createdAt
     updatedAt
     comments {
       _id
-      writerId
+      writerId {
+        _id
+        userName
+      }
       comment
       createdAt
       updatedAt

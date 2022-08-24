@@ -27,7 +27,7 @@ let schema = buildSchema(`
 
   type Article {
     _id: String
-    writerId: String
+    writerId: User
     content: String
     createdAt: String
     updatedAt: String
@@ -38,7 +38,7 @@ let schema = buildSchema(`
 
   type Comment {
     _id: String
-    writerId: String
+    writerId: User
     comment: String
     createdAt: String
     updatedAt: String
@@ -63,7 +63,14 @@ let root = {
     return ans;
   },
   article: async ({ id }) => {
-    const ans = await Article.findOne({ _id: id }).populate("comments");
+    const ans = await Article.findOne({ _id: id })
+      .populate({
+        path: "comments",
+        populate: {
+          path: "writerId",
+        },
+      })
+      .populate("writerId");
     return ans;
   },
   subcomments: async ({ id }) => {
