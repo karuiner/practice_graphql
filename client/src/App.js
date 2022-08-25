@@ -116,6 +116,7 @@ const getOneArticle = `query Test($id: ID!)  {
       _id
       userName
     } 
+    subject
     content
     createdAt
     updatedAt
@@ -140,12 +141,12 @@ function App() {
   let [doLogout, setDoLogout] = useState(false);
   const { loading, error, data } = useQuery(getOneArticle, {
     variables: {
-      id: "6304a9c2a857e5069fa5c3a1",
+      id: "630751585ef053ba8ca8fdb5",
     },
   });
   if (!comments && data) {
-    console.log(data);
     let newdata = data.article;
+    console.log(newdata);
     let newcomments = newdata.comments.map((x) => [false, false, x]);
     setArticle({ ...newdata });
     setCommnets([...newcomments]);
@@ -198,7 +199,7 @@ function App() {
           </InOutButton>
         </Header>
         <ArticleArea>
-          <Article />
+          <Article article={article} />
         </ArticleArea>
         <ContentArea>
           <NewCommentBox>

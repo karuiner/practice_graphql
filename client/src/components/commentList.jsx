@@ -2,7 +2,7 @@ import { useState } from "react";
 import styled from "styled-components";
 import Comment from "./comment";
 import NewComment from "./newcomment";
-
+import { useQuery } from "graphql-hooks";
 const Frame = styled.div`
   height: 100%;
   width: 100%;
@@ -29,7 +29,21 @@ const CoomentOuterBox = styled.div`
   align-items: flex-end;
 `;
 
+const getSubComments = `query getSubComments($id: ID!)  {
+	subcomments(id: $id) {
+	  _id
+    writerId {
+      _id
+      userName
+    }
+	  comment
+	  createdAt
+	  updatedAt
+	} 
+}
+`;
 export default function CommentList({
+  id,
   comments,
   sub,
   noReply,
@@ -37,7 +51,19 @@ export default function CommentList({
   writeReply,
   setWriteReply,
 }) {
-  let [data, setData] = useState(Array(10).fill([false, false]));
+  let [tdata, setData] = useState([]);
+  const { loading, error, data } = useQuery(getSubComments, {
+    variables: {
+      id: id,
+    },
+  });
+  if (!noReply) {
+    if (!tdata && !loading) {
+    }
+  } else {
+    setData([]);
+  }
+
   return (
     <Frame>
       {comments.map(([x, y, cmt], i) => (
@@ -75,8 +101,8 @@ export default function CommentList({
               <NewComment usb></NewComment>
             </NewSubCommentBox>
           ) : null}
-          {!sub && data.length && x > 0 ? (
-            <CommentList comments={data} sub noReply></CommentList>
+          {!sub && data.length > 0 && x ? (
+            <CommentList id={cmt._id} comments={data} sub noReply></CommentList>
           ) : null}
         </CoomentOuterBox>
       ))}

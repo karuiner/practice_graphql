@@ -6,7 +6,7 @@ const articleSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-
+    subject: { type: String, required: true },
     content: { type: String, required: true },
     comments: [
       {

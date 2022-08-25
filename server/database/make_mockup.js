@@ -15,7 +15,7 @@ const articleSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-
+    subject: { type: String, required: true },
     content: { type: String, required: true },
     comments: [
       {
@@ -82,6 +82,7 @@ async function f() {
   if (article === null) {
     article = new Article({
       writerId: editer._id,
+      subject: "test_subject",
       content: "test_content",
     });
     article = await article.save();

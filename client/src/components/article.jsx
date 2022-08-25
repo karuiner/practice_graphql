@@ -44,16 +44,25 @@ const ArticleInfoSubBox = styled.div`
   ${({ left }) => (!left ? "padding-left: 10px;" : "padding-right: 10px;")}
 `;
 
-export default function Article() {
+export default function Article({ article }) {
+  console.log(article);
+  let date = null;
+  if (article) {
+    date = new Date(Number(article?.createdAt));
+    date = date.toLocaleDateString();
+  }
+
   return (
     <Frame>
       <ArticleInfoBox>
-        <ArticleSubject>Title</ArticleSubject>
+        <ArticleSubject>{article?.subject || ""}</ArticleSubject>
         <ArticleInfoLowerBox>
           <ArticleInfoSubBox left>글쓴이</ArticleInfoSubBox>
-          <ArticleInfoSubBox>alsjfuensl</ArticleInfoSubBox>
+          <ArticleInfoSubBox>
+            {article?.writerId?.userName || ""}
+          </ArticleInfoSubBox>
           <ArticleInfoSubBox left>작성 일자</ArticleInfoSubBox>
-          <ArticleInfoSubBox>1992.06.10</ArticleInfoSubBox>
+          <ArticleInfoSubBox>{article ? date : null}</ArticleInfoSubBox>
           <ArticleInfoSubBox left>조회수</ArticleInfoSubBox>
           <ArticleInfoSubBox>100</ArticleInfoSubBox>
           <ArticleInfoSubBox left>댓글수</ArticleInfoSubBox>

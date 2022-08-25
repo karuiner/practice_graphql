@@ -69,6 +69,11 @@ export default function Comment({
   setShowReply,
   setWriteReply,
 }) {
+  let date = null;
+  if (data) {
+    date = new Date(Number(data.createdAt));
+    date = date.toLocaleString();
+  }
   return (
     <Frame>
       <UserName></UserName>
@@ -76,7 +81,7 @@ export default function Comment({
         <Content>{data.comment}</Content>
         <Etc>
           <Sub>{`작성자 : ${data?.writerId?.userName}`}</Sub>
-          <Sub>작성 시간 : time</Sub>
+          <Sub>{`작성 시간 : ${date} `}</Sub>
           {noReply ? null : (
             <Sub
               onClick={() => {
