@@ -45,7 +45,7 @@ const ArticleInfoSubBox = styled.div`
 `;
 
 export default function Article({ article }) {
-  console.log(article);
+  // console.log(article);
   let date = null;
   if (article) {
     date = new Date(Number(article?.createdAt));

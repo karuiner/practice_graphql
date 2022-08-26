@@ -139,36 +139,21 @@ function App() {
   let [article, setArticle] = useState();
   let [isLogin, setIsLogin] = useState(false);
   let [doLogout, setDoLogout] = useState(false);
-  const { loading, error, data } = useQuery(getOneArticle, {
-    variables: {
-      id: "630751585ef053ba8ca8fdb5",
-    },
-  });
-  if (!comments && data) {
-    let newdata = data.article;
-    console.log(newdata);
-    let newcomments = newdata.comments.map((x) => [false, false, x]);
-    setArticle({ ...newdata });
-    setCommnets([...newcomments]);
+  if (!comments) {
+    axios
+      .post(serverURI, {
+        query: getOneArticle,
+        variables: {
+          id: "630751585ef053ba8ca8fdb5",
+        },
+      })
+      .then((x) => {
+        let newdata = x.data.data.article;
+        let newcomments = newdata.comments.map((x) => [false, false, x]);
+        setArticle({ ...newdata });
+        setCommnets([...newcomments]);
+      });
   }
-  // axios
-  //   .post(serverURI, {
-  //     query: `
-  //       {
-  //         article(id: "6304a9c2a857e5069fa5c3a1") {
-  //         _id
-  //         writerId
-  //         content
-  //         createdAt
-  //         updatedAt
-  //         }
-  //       }
-
-  //      `,
-  //   })
-  //   .then((x) => {
-  //     console.log(x);
-  //   });
 
   return (
     <Frame>

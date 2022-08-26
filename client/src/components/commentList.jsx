@@ -3,6 +3,7 @@ import styled from "styled-components";
 import Comment from "./comment";
 import NewComment from "./newcomment";
 import { useQuery } from "graphql-hooks";
+import axios from "axios";
 const Frame = styled.div`
   height: 100%;
   width: 100%;
@@ -42,6 +43,8 @@ const getSubComments = `query getSubComments($id: ID!)  {
 	} 
 }
 `;
+const serverURI = "http://localhost:4000/graphql";
+
 export default function CommentList({
   id,
   comments,
@@ -51,19 +54,7 @@ export default function CommentList({
   writeReply,
   setWriteReply,
 }) {
-  let [tdata, setData] = useState([]);
-  const { loading, error, data } = useQuery(getSubComments, {
-    variables: {
-      id: id,
-    },
-  });
-  if (!noReply) {
-    if (!tdata && !loading) {
-    }
-  } else {
-    setData([]);
-  }
-
+  let [tdata, setData] = useState(Array(comments.length).fill([]));
   return (
     <Frame>
       {comments.map(([x, y, cmt], i) => (
@@ -74,6 +65,29 @@ export default function CommentList({
               noReply={noReply}
               showReply={x}
               setShowReply={(x) => {
+                axios
+                  .post(serverURI, {
+                    query: getSubComments,
+                    variables: {
+                      id: cmt._id,
+                    },
+                  })
+                  .then((x) => {
+                    let newcomments = x.data.data.subcomments.map((x) => [
+                      false,
+                      false,
+                      x,
+                    ]);
+                    if (newcomments.length > 0) {
+                      setData([
+                        ...tdata.slice(0, i),
+                        newcomments,
+                        ...tdata.slice(i + 1),
+                      ]);
+                    } else {
+                      setData(tdata);
+                    }
+                  });
                 let z = y;
                 if (!x) {
                   z = false;
@@ -101,8 +115,13 @@ export default function CommentList({
               <NewComment usb></NewComment>
             </NewSubCommentBox>
           ) : null}
-          {!sub && data.length > 0 && x ? (
-            <CommentList id={cmt._id} comments={data} sub noReply></CommentList>
+          {!sub && tdata[i].length > 0 && x ? (
+            <CommentList
+              id={cmt._id}
+              comments={tdata[i]}
+              sub
+              noReply
+            ></CommentList>
           ) : null}
         </CoomentOuterBox>
       ))}
