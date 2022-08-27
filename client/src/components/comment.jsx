@@ -62,19 +62,26 @@ const RemoveButton = styled.button`
 `;
 
 export default function Comment({
+  data,
   noReply,
   showReply,
   writeReply,
   setShowReply,
   setWriteReply,
 }) {
+  let date = null;
+  if (data) {
+    date = new Date(Number(data.createdAt));
+    date = date.toLocaleString();
+  }
   return (
     <Frame>
-      <UserName>name</UserName>
+      <UserName></UserName>
       <ContentBox>
-        <Content>content</Content>
+        <Content>{data.comment}</Content>
         <Etc>
-          <Sub>작성 시간 : time</Sub>
+          <Sub>{`작성자 : ${data?.writerId?.userName}`}</Sub>
+          <Sub>{`작성 시간 : ${date} `}</Sub>
           {noReply ? null : (
             <Sub
               onClick={() => {

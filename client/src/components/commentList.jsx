@@ -2,7 +2,8 @@ import { useState } from "react";
 import styled from "styled-components";
 import Comment from "./comment";
 import NewComment from "./newcomment";
-
+import { useQuery } from "graphql-hooks";
+import axios from "axios";
 const Frame = styled.div`
   height: 100%;
   width: 100%;
@@ -29,7 +30,23 @@ const CoomentOuterBox = styled.div`
   align-items: flex-end;
 `;
 
+const getSubComments = `query getSubComments($id: ID!)  {
+	subcomments(id: $id) {
+	  _id
+    writerId {
+      _id
+      userName
+    }
+	  comment
+	  createdAt
+	  updatedAt
+	} 
+}
+`;
+const serverURI = "http://localhost:4000/graphql";
+
 export default function CommentList({
+  id,
   comments,
   sub,
   noReply,
@@ -37,23 +54,47 @@ export default function CommentList({
   writeReply,
   setWriteReply,
 }) {
-  let [data, setData] = useState(Array(10).fill([false, false]));
+  let [tdata, setData] = useState(Array(comments.length).fill([]));
   return (
     <Frame>
-      {comments.map(([x, y], i) => (
+      {comments.map(([x, y, cmt], i) => (
         <CoomentOuterBox key={i}>
           <CommentInnerBox sub={sub}>
             <Comment
+              data={cmt || {}}
               noReply={noReply}
               showReply={x}
               setShowReply={(x) => {
+                axios
+                  .post(serverURI, {
+                    query: getSubComments,
+                    variables: {
+                      id: cmt._id,
+                    },
+                  })
+                  .then((x) => {
+                    let newcomments = x.data.data.subcomments.map((x) => [
+                      false,
+                      false,
+                      x,
+                    ]);
+                    if (newcomments.length > 0) {
+                      setData([
+                        ...tdata.slice(0, i),
+                        newcomments,
+                        ...tdata.slice(i + 1),
+                      ]);
+                    } else {
+                      setData(tdata);
+                    }
+                  });
                 let z = y;
                 if (!x) {
                   z = false;
                 }
                 setShowReply([
                   ...comments.slice(0, i),
-                  [x, z],
+                  [x, z, cmt],
                   ...comments.slice(i + 1),
                 ]);
               }}
@@ -62,7 +103,7 @@ export default function CommentList({
                 if (x) {
                   setShowReply([
                     ...comments.slice(0, i),
-                    [x, y],
+                    [x, y, cmt],
                     ...comments.slice(i + 1),
                   ]);
                 }
@@ -74,8 +115,13 @@ export default function CommentList({
               <NewComment usb></NewComment>
             </NewSubCommentBox>
           ) : null}
-          {!sub && data.length && x > 0 ? (
-            <CommentList comments={data} sub noReply></CommentList>
+          {!sub && tdata[i].length > 0 && x ? (
+            <CommentList
+              id={cmt._id}
+              comments={tdata[i]}
+              sub
+              noReply
+            ></CommentList>
           ) : null}
         </CoomentOuterBox>
       ))}
