@@ -18,6 +18,12 @@ let schema = buildSchema(`
     subcomments( id: ID!): [Comment]
   }
 
+  type Mutation {
+    createUser(userName: String!):User
+    createArticle(input: ArticleInput!):Article
+    createComment(input: CommentInput!):Comment
+  }
+
   type User {
     _id: String
     userName: String
@@ -33,7 +39,12 @@ let schema = buildSchema(`
     createdAt: String
     updatedAt: String
     comments:[Comment]
-
+  }
+  
+  input ArticleInput {
+    writerId: String!
+    subject: String!
+    content: String!
   }
 
 
@@ -41,11 +52,19 @@ let schema = buildSchema(`
     _id: String
     writerId: User
     comment: String
+    articleId: String
+    commentId: String
     createdAt: String
     updatedAt: String
     subcomments:[Comment]
   }
 
+  input CommentInput {
+    writerId: String!
+    comment: String!
+    articleId: String
+    commentId: String
+  }
 
 `);
 
@@ -77,6 +96,25 @@ let root = {
   subcomments: async ({ id }) => {
     let comments = await Comment.find({ commentId: id }).populate("writerId");
     return comments;
+  },
+  createUser: async (args, context, info) => {
+    const { userName } = args;
+    let user = new User({ userName });
+    user = await user.save();
+    return user;
+  },
+  createArticle: async (args, context, info) => {
+    const { input } = args;
+
+    let article = new Article({ ...input });
+    article = await article.save();
+    return article;
+  },
+  createComment: async (args, context, info) => {
+    const { input } = args;
+    let comment = new Comment({ ...input });
+    comment = await comment.save();
+    return comment;
   },
 };
 
