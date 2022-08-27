@@ -144,7 +144,7 @@ function App() {
       .post(serverURI, {
         query: getOneArticle,
         variables: {
-          id: "630751585ef053ba8ca8fdb5",
+          id: "6309fafc83c7a6c4d4cf133f",
         },
       })
       .then((x) => {

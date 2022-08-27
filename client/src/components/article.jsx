@@ -66,7 +66,7 @@ export default function Article({ article }) {
           <ArticleInfoSubBox left>조회수</ArticleInfoSubBox>
           <ArticleInfoSubBox>100</ArticleInfoSubBox>
           <ArticleInfoSubBox left>댓글수</ArticleInfoSubBox>
-          <ArticleInfoSubBox>10</ArticleInfoSubBox>
+          <ArticleInfoSubBox>73</ArticleInfoSubBox>
         </ArticleInfoLowerBox>
       </ArticleInfoBox>
       <Content>{"test"}</Content>

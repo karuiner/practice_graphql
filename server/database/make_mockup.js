@@ -117,8 +117,11 @@ async function f() {
       article.comments.push(comment);
       articel = await article.save();
       for (let j = 0; j <= l; j++) {
+        let k = Math.floor(Math.random() * 50);
+        k = k > 49 ? 49 : k;
         let subcomment = new Comment({
           writerId: users[k]._id,
+          articleId: article._id,
           commentId: comment._id,
           comment: `comment${`${c}`.padStart(4, "0")}`,
         });
