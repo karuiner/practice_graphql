@@ -22,7 +22,8 @@
 
 - react
 - styled-component
-- graphql-hooks // 사용해보자
+- ~~graphql-hooks // 사용해보자~~
+- Axios를 사용한 요청으로 대체
 
 ## DB //아직 미정
 
@@ -41,8 +42,9 @@
 
 ```js
 {
-  id: number || ObjectId; // 아직 db 타입을 결정 하지 않음.
-  writerId: number || ObjectId; //작성한 유저 아이디
+  id:  ObjectId;
+  subject :string
+  writerId:  ObjectId; //작성한 유저 아이디
   contents: string; //게시글 내용, 내용은 주용치 않으니 더미값으로
   createdAt: Date; //생성 시각
   updatedAt: Date; //수정 시작
@@ -53,9 +55,9 @@
 
 ```js
 {
-  id: number || ObjectId; // 아직 db 타입을 결정 하지 않음.
-  writerId: number || ObjectId; //작성한 유저 아이디
-  relateId: number || ObjectId; //상위 요소 아이디 (게시글이거나 댓글이거나)
+  id:  ObjectId; 
+  writerId: ObjectId; //작성한 유저 아이디
+  relateId: ObjectId; //상위 요소 아이디 (게시글이거나 댓글이거나)
   comment: string; //댓글 내용
   createdAt: Date; //생성 시각
   updatedAt: Date; //수정 시작
@@ -68,7 +70,8 @@
 
 - graphql - 이번 학습의 목표
 - express - 뭐 가장 많이 써보긴한것 같으니
-  그다음은 뭐가 필요한지 아직 모르겠다.
+- mongoose
+- mongodb
 
 #### Reference
 
