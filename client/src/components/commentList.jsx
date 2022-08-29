@@ -46,7 +46,7 @@ const getSubComments = `query getSubComments($id: ID!)  {
 const serverURI = "http://localhost:4000/graphql";
 
 export default function CommentList({
-  id,
+  userInfo,
   comments,
   sub,
   noReply,
@@ -61,6 +61,7 @@ export default function CommentList({
         <CoomentOuterBox key={i}>
           <CommentInnerBox sub={sub}>
             <Comment
+              canDelete={userInfo?.userName === cmt?.writerId?.userName}
               data={cmt || {}}
               noReply={noReply}
               showReply={x}
@@ -110,13 +111,14 @@ export default function CommentList({
               }}
             ></Comment>
           </CommentInnerBox>
-          {x && y ? (
+          {x && y && userInfo.status ? (
             <NewSubCommentBox>
               <NewComment usb></NewComment>
             </NewSubCommentBox>
           ) : null}
           {!sub && tdata[i].length > 0 && x ? (
             <CommentList
+              userInfo={userInfo}
               id={cmt._id}
               comments={tdata[i]}
               sub
