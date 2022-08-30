@@ -131,39 +131,14 @@ let root = {
     let comment = new Comment({ ...input });
     comment = await comment.save();
     if (input.commentId) {
-      let ncmt = await Comment.findOne({ _id: input.commentId })
-        .populate({
-          path: "subcomments",
-          populate: {
-            path: "writerId",
-          },
-          options: {
-            sort: {
-              createdAt: -1,
-            },
-          },
-        })
-        .populate("writerId");
+      let ncmt = await Comment.findOne({ _id: input.commentId });
       ncmt.subcomments.push(comment);
       ncmt = await ncmt.save();
     } else {
-      let article = await Article.findOne({ _id: input.articleId })
-        .populate({
-          path: "comments",
-          populate: {
-            path: "writerId",
-          },
-          options: {
-            sort: {
-              createdAt: -1,
-            },
-          },
-        })
-        .populate("writerId");
+      let article = await Article.findOne({ _id: input.articleId });
       article.comments.push(comment);
       article = await article.save();
     }
-
     return comment;
   },
 };
