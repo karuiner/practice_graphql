@@ -11,6 +11,7 @@ const Comment = require("../schema/Comment");
 let schema = buildSchema(`
   type Query {
     hello: String
+    login: User
     user( id: ID!): User
     users( id: ID): [User]
     articles( id: ID): [Article]
@@ -70,6 +71,14 @@ let schema = buildSchema(`
 
 let root = {
   hello: async () => "Hello world!",
+  login: async () => {
+    const ans = await User.find();
+    const l = ans.length;
+    let k = Math.floor(Math.random() * l);
+    k = k === l ? l - 1 : k;
+    return ans[k];
+  },
+
   user: async ({ id }) => {
     const ans = await User.findOne({ _id: id });
     return ans;
@@ -89,12 +98,19 @@ let root = {
         populate: {
           path: "writerId",
         },
+        options: {
+          sort: {
+            createdAt: -1,
+          },
+        },
       })
       .populate("writerId");
     return ans;
   },
   subcomments: async ({ id }) => {
-    let comments = await Comment.find({ commentId: id }).populate("writerId");
+    let comments = await Comment.find({ commentId: id })
+      .populate("writerId")
+      .sort({ createdAt: -1 });
     return comments;
   },
   createUser: async (args, context, info) => {
@@ -114,6 +130,15 @@ let root = {
     const { input } = args;
     let comment = new Comment({ ...input });
     comment = await comment.save();
+    if (input.commentId) {
+      let ncmt = await Comment.findOne({ _id: input.commentId });
+      ncmt.subcomments.push(comment);
+      ncmt = await ncmt.save();
+    } else {
+      let article = await Article.findOne({ _id: input.articleId });
+      article.comments.push(comment);
+      article = await article.save();
+    }
     return comment;
   },
 };

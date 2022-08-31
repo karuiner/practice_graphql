@@ -62,6 +62,7 @@ const RemoveButton = styled.button`
 `;
 
 export default function Comment({
+  canDelete,
   data,
   noReply,
   showReply,
@@ -106,7 +107,7 @@ export default function Comment({
       </ContentBox>
 
       <RemoveButtonBox>
-        <RemoveButton>X</RemoveButton>
+        {canDelete ? <RemoveButton>X</RemoveButton> : null}
       </RemoveButtonBox>
     </Frame>
   );

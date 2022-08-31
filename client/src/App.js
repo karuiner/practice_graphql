@@ -82,11 +82,10 @@ const InOutButton = styled.div`
 
 const UserIconBox = styled.div`
   height: 60px;
-  width: 60px;
+  width: 100px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: solid 1px black;
   ${({ isLogin, doLogout }) => {
     if (isLogin && !doLogout) {
       return css`
@@ -132,12 +131,40 @@ const getOneArticle = `query Test($id: ID!)  {
     }
   }
 }`;
+
+const getLogin = `
+{
+  login {
+    _id
+    userName
+    createdAt
+    updatedAt
+  }
+}
+`;
+const createArticleComment = `
+mutation($input:CommentInput!){
+  createComment(input:$input) {
+    _id
+    comment
+    writerId {
+      _id
+      userName
+    }
+    articleId
+    commentId
+    createdAt
+    updatedAt
+  } 
+}
+`;
+
 const serverURI = "http://localhost:4000/graphql";
 
 function App() {
   let [comments, setCommnets] = useState();
   let [article, setArticle] = useState();
-  let [isLogin, setIsLogin] = useState(false);
+  let [userInfo, setUserInfo] = useState({ status: false, userName: "" });
   let [doLogout, setDoLogout] = useState(false);
   if (!comments) {
     axios
@@ -154,33 +181,36 @@ function App() {
         setCommnets([...newcomments]);
       });
   }
-
   return (
     <Frame>
       <InnerFrame>
         <Header>
-          {isLogin ? (
+          {userInfo.status ? (
             <UserIconBox
-              isLogin={isLogin}
+              isLogin={userInfo.status}
               doLogout={doLogout}
               onAnimationEnd={(e) => {
-                if (isLogin && doLogout) {
-                  setIsLogin(false);
+                if (userInfo.status && doLogout) {
+                  setUserInfo({ status: false, userName: "" });
                   setDoLogout(false);
                 }
               }}
-            ></UserIconBox>
+            >
+              {userInfo.userName}
+            </UserIconBox>
           ) : null}
           <InOutButton
             onClick={() => {
-              if (!isLogin) {
-                setIsLogin(!isLogin);
+              if (!userInfo.status) {
+                axios.post(serverURI, { query: getLogin }).then((x) => {
+                  setUserInfo({ ...x.data.data.login, status: true });
+                });
               } else {
                 setDoLogout(true);
               }
             }}
           >
-            {isLogin ? "로그아웃" : "로그인"}
+            {userInfo.status ? "로그아웃" : "로그인"}
           </InOutButton>
         </Header>
         <ArticleArea>
@@ -188,10 +218,35 @@ function App() {
         </ArticleArea>
         <ContentArea>
           <NewCommentBox>
-            <NewComment></NewComment>
+            <NewComment
+              writeComment={(comment) => {
+                if (userInfo.status) {
+                  axios
+                    .post(serverURI, {
+                      query: createArticleComment,
+                      variables: {
+                        input: {
+                          writerId: userInfo._id,
+                          comment,
+                          articleId: article._id,
+                        },
+                      },
+                    })
+                    .then((x) => {
+                      x.data.data.createComment.writerId.userName =
+                        userInfo.userName;
+                      setCommnets([
+                        [false, false, { ...x.data.data.createComment }],
+                        ...comments,
+                      ]);
+                    });
+                }
+              }}
+            ></NewComment>
           </NewCommentBox>
           {comments ? (
             <CommentList
+              userInfo={userInfo}
               comments={comments}
               setShowReply={setCommnets}
             ></CommentList>

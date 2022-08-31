@@ -1,3 +1,4 @@
+import { useState } from "react";
 import styled from "styled-components";
 
 const Frame = styled.div`
@@ -17,11 +18,26 @@ const ButtonBox = styled.button`
   height: 100%;
 `;
 
-export default function NewComment() {
+export default function NewComment({ writeComment }) {
+  let [text, setText] = useState("");
   return (
     <Frame>
-      <InputBox></InputBox>
-      <ButtonBox>작성</ButtonBox>
+      <InputBox
+        value={text}
+        onChange={(e) => {
+          setText(e.target.value);
+        }}
+      ></InputBox>
+      <ButtonBox
+        onClick={() => {
+          if (text.length > 0) {
+            writeComment(text);
+            setText("");
+          }
+        }}
+      >
+        작성
+      </ButtonBox>
     </Frame>
   );
 }

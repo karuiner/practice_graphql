@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styled from "styled-components";
 import Comment from "./comment";
 import NewComment from "./newcomment";
@@ -43,10 +43,27 @@ const getSubComments = `query getSubComments($id: ID!)  {
 	} 
 }
 `;
+
+const createArticleComment = `
+mutation($input:CommentInput!){
+  createComment(input:$input) {
+    _id
+    comment
+    writerId {
+      _id
+      userName
+    }
+    articleId
+    commentId
+    createdAt
+    updatedAt
+  } 
+}
+`;
 const serverURI = "http://localhost:4000/graphql";
 
 export default function CommentList({
-  id,
+  userInfo,
   comments,
   sub,
   noReply,
@@ -54,77 +71,121 @@ export default function CommentList({
   writeReply,
   setWriteReply,
 }) {
-  let [tdata, setData] = useState(Array(comments.length).fill([]));
+  let [tdata, setData] = useState({});
+  useEffect(() => {
+    if (tdata.length === 0 && comments.length !== 0) {
+      let ntdata = {};
+      comments.forEach((x) => {
+        ntdata[x._id] = [];
+      });
+      setData(tdata);
+    } else if (tdata.length > 0 && tdata.length !== comments.length) {
+      let ntdata = {};
+      comments.forEach((x) => {
+        if (tdata[x._id]) {
+          ntdata[x._id] = [];
+        }
+      });
+      setData({ ...tdata, ...ntdata });
+    }
+  }, [tdata, comments]);
+
   return (
     <Frame>
-      {comments.map(([x, y, cmt], i) => (
-        <CoomentOuterBox key={i}>
-          <CommentInnerBox sub={sub}>
-            <Comment
-              data={cmt || {}}
-              noReply={noReply}
-              showReply={x}
-              setShowReply={(x) => {
-                axios
-                  .post(serverURI, {
-                    query: getSubComments,
-                    variables: {
-                      id: cmt._id,
-                    },
-                  })
-                  .then((x) => {
-                    let newcomments = x.data.data.subcomments.map((x) => [
-                      false,
-                      false,
-                      x,
-                    ]);
-                    if (newcomments.length > 0) {
-                      setData([
-                        ...tdata.slice(0, i),
-                        newcomments,
-                        ...tdata.slice(i + 1),
+      {comments.map(([x, y, cmt], i) => {
+        return (
+          <CoomentOuterBox key={i}>
+            <CommentInnerBox sub={sub}>
+              <Comment
+                canDelete={userInfo?.userName === cmt?.writerId?.userName}
+                data={cmt || {}}
+                noReply={noReply}
+                showReply={x}
+                setShowReply={(x) => {
+                  axios
+                    .post(serverURI, {
+                      query: getSubComments,
+                      variables: {
+                        id: cmt._id,
+                      },
+                    })
+                    .then((x) => {
+                      let newcomments = x.data.data.subcomments.map((x) => [
+                        false,
+                        false,
+                        x,
                       ]);
-                    } else {
-                      setData(tdata);
-                    }
-                  });
-                let z = y;
-                if (!x) {
-                  z = false;
-                }
-                setShowReply([
-                  ...comments.slice(0, i),
-                  [x, z, cmt],
-                  ...comments.slice(i + 1),
-                ]);
-              }}
-              writeReply={y}
-              setWriteReply={(y) => {
-                if (x) {
+                      if (newcomments.length > 0) {
+                        setData({ ...tdata, [cmt._id]: newcomments });
+                      }
+                    });
                   setShowReply([
                     ...comments.slice(0, i),
                     [x, y, cmt],
                     ...comments.slice(i + 1),
                   ]);
-                }
-              }}
-            ></Comment>
-          </CommentInnerBox>
-          {x && y ? (
-            <NewSubCommentBox>
-              <NewComment usb></NewComment>
-            </NewSubCommentBox>
-          ) : null}
-          {!sub && tdata[i].length > 0 && x ? (
-            <CommentList
-              id={cmt._id}
-              comments={tdata[i]}
-              sub
-              noReply
-            ></CommentList>
-          ) : null}
-        </CoomentOuterBox>
-      ))}
+                }}
+                writeReply={y}
+                setWriteReply={(y) => {
+                  setShowReply([
+                    ...comments.slice(0, i),
+                    [x, y, cmt],
+                    ...comments.slice(i + 1),
+                  ]);
+                }}
+              ></Comment>
+            </CommentInnerBox>
+            {y && userInfo.status ? (
+              <NewSubCommentBox>
+                <NewComment
+                  usb
+                  writeComment={(comment) => {
+                    if (userInfo.status) {
+                      axios
+                        .post(serverURI, {
+                          query: createArticleComment,
+                          variables: {
+                            input: {
+                              writerId: userInfo._id,
+                              comment,
+                              commentId: cmt._id,
+                            },
+                          },
+                        })
+                        .then((x) => {
+                          x.data.data.createComment.writerId.userName =
+                            userInfo.userName;
+
+                          setData({
+                            ...tdata,
+                            [cmt._id]: [
+                              [false, false, { ...x.data.data.createComment }],
+                              ...tdata[cmt._id],
+                            ],
+                          });
+                          setShowReply([
+                            ...comments.slice(0, i),
+                            [true, false, cmt],
+                            ...comments.slice(i + 1),
+                          ]);
+                        });
+                    }
+                  }}
+                ></NewComment>
+              </NewSubCommentBox>
+            ) : null}
+            {!sub && tdata[cmt._id]?.length > 0 && x ? (
+              <CommentList
+                userInfo={userInfo}
+                id={cmt._id}
+                comments={tdata[cmt._id]}
+                sub
+                noReply
+              ></CommentList>
+            ) : null}
+          </CoomentOuterBox>
+        );
+      })}
     </Frame>
   );
 }
