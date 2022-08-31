@@ -233,7 +233,6 @@ function App() {
                       },
                     })
                     .then((x) => {
-                      console.log(x.data.data.createComment);
                       x.data.data.createComment.writerId.userName =
                         userInfo.userName;
                       setCommnets([

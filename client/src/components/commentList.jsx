@@ -43,6 +43,23 @@ const getSubComments = `query getSubComments($id: ID!)  {
 	} 
 }
 `;
+
+const createArticleComment = `
+mutation($input:CommentInput!){
+  createComment(input:$input) {
+    _id
+    comment
+    writerId {
+      _id
+      userName
+    }
+    articleId
+    commentId
+    createdAt
+    updatedAt
+  } 
+}
+`;
 const serverURI = "http://localhost:4000/graphql";
 
 export default function CommentList({
@@ -102,31 +119,59 @@ export default function CommentList({
                         setData({ ...tdata, [cmt._id]: newcomments });
                       }
                     });
-                  let z = y;
-                  if (!x) {
-                    z = false;
-                  }
                   setShowReply([
                     ...comments.slice(0, i),
-                    [x, z, cmt],
+                    [x, y, cmt],
                     ...comments.slice(i + 1),
                   ]);
                 }}
                 writeReply={y}
                 setWriteReply={(y) => {
-                  if (x) {
-                    setShowReply([
-                      ...comments.slice(0, i),
-                      [x, y, cmt],
-                      ...comments.slice(i + 1),
-                    ]);
-                  }
+                  setShowReply([
+                    ...comments.slice(0, i),
+                    [x, y, cmt],
+                    ...comments.slice(i + 1),
+                  ]);
                 }}
               ></Comment>
             </CommentInnerBox>
-            {x && y && userInfo.status ? (
+            {y && userInfo.status ? (
               <NewSubCommentBox>
-                <NewComment usb></NewComment>
+                <NewComment
+                  usb
+                  writeComment={(comment) => {
+                    if (userInfo.status) {
+                      axios
+                        .post(serverURI, {
+                          query: createArticleComment,
+                          variables: {
+                            input: {
+                              writerId: userInfo._id,
+                              comment,
+                              commentId: cmt._id,
+                            },
+                          },
+                        })
+                        .then((x) => {
+                          x.data.data.createComment.writerId.userName =
+                            userInfo.userName;
+
+                          setData({
+                            ...tdata,
+                            [cmt._id]: [
+                              [false, false, { ...x.data.data.createComment }],
+                              ...tdata[cmt._id],
+                            ],
+                          });
+                          setShowReply([
+                            ...comments.slice(0, i),
+                            [true, false, cmt],
+                            ...comments.slice(i + 1),
+                          ]);
+                        });
+                    }
+                  }}
+                ></NewComment>
               </NewSubCommentBox>
             ) : null}
             {!sub && tdata[cmt._id]?.length > 0 && x ? (
